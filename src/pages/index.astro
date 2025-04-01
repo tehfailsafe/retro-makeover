@@ -3,89 +3,141 @@ import Layout from "../layouts/Layout.astro";
 ---
 
 <Layout>
-  <main class="container mx-auto p-4">
-    <h2 class="text-3xl font-bold tracking-tight mb-6">Image Upload Form</h2>
+  <main class="container max-w-6xl mx-auto p-4">
+    <h2 class="text-3xl font-bold tracking-tight mb-6 text-center">
+      Image Upload Form
+    </h2>
 
-    <form id="imageUploadForm" class="max-w-md mb-8">
-      <div class="mb-4">
-        <label for="imageFile" class="block text-sm font-medium mb-2"
-          >Select Image</label
-        >
-        <input
-          type="file"
-          id="imageFile"
-          name="imageFile"
-          accept="image/*"
-          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-          required
-        />
-      </div>
+    <!-- Form Card -->
+    <div class="bg-white p-6 rounded-lg shadow-md mb-8 max-w-md mx-auto">
+      <form id="imageUploadForm" class="w-full">
+        <div class="mb-4">
+          <label for="imageFile" class="block text-sm font-medium mb-2"
+            >Select Image</label
+          >
+          <input
+            type="file"
+            id="imageFile"
+            name="imageFile"
+            accept="image/*"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+            required
+          />
+        </div>
 
-      <div class="mb-4">
-        <button
-          type="submit"
-          class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-        >
-          Upload Image
-        </button>
-      </div>
-    </form>
+        <div class="mb-2">
+          <button
+            type="submit"
+            class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+          >
+            Upload Image
+          </button>
+        </div>
+      </form>
+    </div>
 
     <!-- Results container - horizontal on desktop, vertical on mobile -->
-    <div class="flex flex-col md:flex-row md:space-x-6 space-y-6 md:space-y-0">
+    <div
+      class="flex flex-col md:flex-row md:space-x-6 space-y-6 md:space-y-0 max-w-4xl mx-auto"
+    >
       <!-- Image Preview Card -->
       <div id="preview" class="hidden md:w-1/2 flex-1">
         <div class="bg-white p-4 rounded-lg shadow-md h-full flex flex-col">
           <h3 class="text-xl font-semibold mb-3">Image Preview</h3>
-          <div class="border rounded-md overflow-hidden flex-1 flex items-center justify-center">
+          <div
+            class="border rounded-md overflow-hidden flex-1 flex items-center justify-center"
+          >
             <img id="imagePreview" class="w-full h-auto" alt="Preview" />
           </div>
         </div>
       </div>
-      
+
       <!-- Analysis Results Card -->
       <div id="analysisContainer" class="md:w-1/2 hidden flex-1">
         <div class="bg-white p-4 rounded-lg shadow-md h-full flex flex-col">
           <h3 class="text-xl font-semibold mb-3">Analysis Results</h3>
-          
+
           <!-- Ready State (shown when file is selected but not yet submitted) -->
-          <div id="analysisReady" class="py-4 flex-1 flex flex-col items-center justify-center">
+          <div
+            id="analysisReady"
+            class="py-4 flex-1 flex flex-col items-center justify-center"
+          >
             <div class="bg-indigo-50 p-4 rounded-full">
-              <svg class="h-8 w-8 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <svg
+                class="h-8 w-8 text-indigo-600"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
+                ></path>
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
               </svg>
             </div>
-            <p class="text-center mt-4 text-gray-700 font-medium">Ready to Analyze</p>
-            <p class="text-center mt-2 text-gray-500 text-sm">Click the Upload button to analyze this image</p>
+            <p class="text-center mt-4 text-gray-700 font-medium">
+              Ready to Analyze
+            </p>
+            <p class="text-center mt-2 text-gray-500 text-sm">
+              Click the Upload button to analyze this image
+            </p>
           </div>
-          
+
           <!-- Loading State -->
-          <div id="analysisLoading" class="hidden py-4 flex-1 flex flex-col items-center justify-center">
+          <div
+            id="analysisLoading"
+            class="hidden py-4 flex-1 flex flex-col items-center justify-center"
+          >
             <div class="flex items-center justify-center space-x-2">
-              <div class="w-4 h-4 bg-indigo-600 rounded-full animate-pulse"></div>
-              <div class="w-4 h-4 bg-indigo-600 rounded-full animate-pulse delay-75"></div>
-              <div class="w-4 h-4 bg-indigo-600 rounded-full animate-pulse delay-150"></div>
+              <div class="w-4 h-4 bg-indigo-600 rounded-full animate-pulse">
+              </div>
+              <div
+                class="w-4 h-4 bg-indigo-600 rounded-full animate-pulse delay-75"
+              >
+              </div>
+              <div
+                class="w-4 h-4 bg-indigo-600 rounded-full animate-pulse delay-150"
+              >
+              </div>
             </div>
             <p class="text-center mt-3 text-gray-600">Analyzing image...</p>
           </div>
-          
+
           <!-- Error State -->
-          <div id="analysisError" class="hidden py-4 flex-1 flex items-center justify-center">
+          <div
+            id="analysisError"
+            class="hidden py-4 flex-1 flex items-center justify-center"
+          >
             <div class="bg-red-50 border-l-4 border-red-500 p-4 w-full">
               <div class="flex items-start">
                 <div class="flex-shrink-0">
-                  <svg class="h-5 w-5 text-red-500" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                  <svg
+                    class="h-5 w-5 text-red-500"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                      clip-rule="evenodd"></path>
                   </svg>
                 </div>
                 <div class="ml-3">
-                  <p id="analysisErrorMessage" class="text-sm text-red-700">Error processing image</p>
+                  <p id="analysisErrorMessage" class="text-sm text-red-700">
+                    Error processing image
+                  </p>
                 </div>
               </div>
             </div>
           </div>
-          
+
           <!-- Success State -->
           <div id="analysisResults" class="hidden py-2 flex-1 overflow-auto">
             <div id="analysisData" class="text-gray-700"></div>
@@ -93,7 +145,7 @@ import Layout from "../layouts/Layout.astro";
         </div>
       </div>
     </div>
-    
+
     <!-- Hidden response data container (not displayed) -->
     <div id="response" class="hidden">
       <pre id="responseData" class="hidden"></pre>
@@ -106,16 +158,20 @@ import Layout from "../layouts/Layout.astro";
     const form = document.getElementById("imageUploadForm");
     const fileInput = document.getElementById("imageFile") as HTMLInputElement;
     const preview = document.getElementById("preview");
-    const imagePreview = document.getElementById("imagePreview") as HTMLImageElement;
+    const imagePreview = document.getElementById(
+      "imagePreview"
+    ) as HTMLImageElement;
     const response = document.getElementById("response");
     const responseData = document.getElementById("responseData");
-    
+
     // Analysis elements
     const analysisContainer = document.getElementById("analysisContainer");
     const analysisReady = document.getElementById("analysisReady");
     const analysisLoading = document.getElementById("analysisLoading");
     const analysisError = document.getElementById("analysisError");
-    const analysisErrorMessage = document.getElementById("analysisErrorMessage");
+    const analysisErrorMessage = document.getElementById(
+      "analysisErrorMessage"
+    );
     const analysisResults = document.getElementById("analysisResults");
     const analysisData = document.getElementById("analysisData");
 
@@ -138,7 +194,7 @@ import Layout from "../layouts/Layout.astro";
       console.error("One or more required elements not found");
       return;
     }
-    
+
     // Helper function to reset analysis states
     const resetAnalysisStates = () => {
       analysisReady.classList.add("hidden");
@@ -146,14 +202,14 @@ import Layout from "../layouts/Layout.astro";
       analysisError.classList.add("hidden");
       analysisResults.classList.add("hidden");
     };
-    
+
     // Helper function to show analysis loading state
     const showAnalysisLoading = () => {
       resetAnalysisStates();
       analysisContainer.classList.remove("hidden");
       analysisLoading.classList.remove("hidden");
     };
-    
+
     // Helper function to show analysis error
     const showAnalysisError = (message: string) => {
       resetAnalysisStates();
@@ -162,15 +218,15 @@ import Layout from "../layouts/Layout.astro";
       }
       analysisError.classList.remove("hidden");
     };
-    
+
     // Helper function to show analysis results
     const showAnalysisResults = (data: any) => {
       resetAnalysisStates();
-      
+
       if (data) {
         // Display the actual API response content
-        let resultHTML = '';
-        
+        let resultHTML = "";
+
         // Check if the response was successful
         if (data.success) {
           // Header with success indicator
@@ -182,10 +238,10 @@ import Layout from "../layouts/Layout.astro";
               <span class="font-medium">Analysis Complete</span>
             </div>
           `;
-          
+
           // Display all the content from the API response
           resultHTML += `<div class="space-y-4">`;
-          
+
           // If there's an analysis field in the response, show it prominently
           if (data.analysis) {
             resultHTML += `
@@ -195,7 +251,7 @@ import Layout from "../layouts/Layout.astro";
               </div>
             `;
           }
-          
+
           // File information section
           if (data.file) {
             resultHTML += `
@@ -203,67 +259,70 @@ import Layout from "../layouts/Layout.astro";
                 <h4 class="font-semibold mb-2">File Information</h4>
                 <div class="grid grid-cols-2 gap-2 text-sm">
                   <div class="font-medium">Filename:</div>
-                  <div>${data.file.filename || 'Unknown'}</div>
+                  <div>${data.file.filename || "Unknown"}</div>
                   <div class="font-medium">Size:</div>
                   <div>${formatFileSize(data.file.size || 0)}</div>
                   <div class="font-medium">Type:</div>
-                  <div>${data.file.mimetype || 'Unknown'}</div>
+                  <div>${data.file.mimetype || "Unknown"}</div>
                 </div>
               </div>
             `;
           }
-          
+
           // Display any other properties from the response
-          const excludedProps = ['success', 'file', 'analysis', 'message'];
-          const otherProps = Object.keys(data).filter(key => !excludedProps.includes(key));
-          
+          const excludedProps = ["success", "file", "analysis", "message"];
+          const otherProps = Object.keys(data).filter(
+            (key) => !excludedProps.includes(key)
+          );
+
           if (otherProps.length > 0) {
             resultHTML += `
               <div class="border-t pt-3">
                 <h4 class="font-semibold mb-2">Additional Information</h4>
                 <div class="grid grid-cols-2 gap-2 text-sm">
             `;
-            
-            otherProps.forEach(key => {
-              const value = typeof data[key] === 'object' 
-                ? JSON.stringify(data[key], null, 2)
-                : data[key];
-              
+
+            otherProps.forEach((key) => {
+              const value =
+                typeof data[key] === "object"
+                  ? JSON.stringify(data[key], null, 2)
+                  : data[key];
+
               resultHTML += `
                 <div class="font-medium">${key}:</div>
                 <div>${value}</div>
               `;
             });
-            
+
             resultHTML += `
                 </div>
               </div>
             `;
           }
-          
+
           resultHTML += `</div>`;
         } else {
           // Show error message from the server
           showAnalysisError(data.message || "Unknown error occurred");
           return;
         }
-        
+
         analysisData.innerHTML = resultHTML;
       } else {
         showAnalysisError("No data received from server");
         return;
       }
-      
+
       analysisResults.classList.remove("hidden");
     };
-    
+
     // Helper function to format file size
     const formatFileSize = (bytes: number): string => {
-      if (bytes === 0) return '0 Bytes';
+      if (bytes === 0) return "0 Bytes";
       const k = 1024;
-      const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+      const sizes = ["Bytes", "KB", "MB", "GB"];
       const i = Math.floor(Math.log(bytes) / Math.log(k));
-      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
     };
 
     // Helper function to show the ready state
@@ -272,7 +331,7 @@ import Layout from "../layouts/Layout.astro";
       analysisContainer.classList.remove("hidden");
       analysisReady.classList.remove("hidden");
     };
-    
+
     // Show image preview and ready state when a file is selected
     fileInput.addEventListener("change", (e) => {
       if (!e.target) return;
@@ -286,7 +345,7 @@ import Layout from "../layouts/Layout.astro";
           if (e.target?.result) {
             imagePreview.src = e.target.result as string;
             preview.classList.remove("hidden");
-            
+
             // Show the analysis card with ready state
             showReadyState();
           }
@@ -312,7 +371,7 @@ import Layout from "../layouts/Layout.astro";
       // Create FormData object
       const formData = new FormData();
       formData.append("image", file);
-      
+
       // Show loading states
       showAnalysisLoading();
 
@@ -331,7 +390,7 @@ import Layout from "../layouts/Layout.astro";
         submitButton.disabled = true;
 
         // Send the request to the API
-        const res = await fetch("http://localhost:3000/upload", {
+        const res = await fetch("https://retro-backend.up.railway.app/upload", {
           method: "POST",
           body: formData,
         });
@@ -343,7 +402,7 @@ import Layout from "../layouts/Layout.astro";
         if (responseData) {
           responseData.textContent = JSON.stringify(data, null, 2);
         }
-        
+
         // Display the analysis results
         showAnalysisResults(data);
 
@@ -352,12 +411,12 @@ import Layout from "../layouts/Layout.astro";
         submitButton.disabled = false;
       } catch (error: any) {
         console.error("Error uploading image:", error);
-        
+
         // Store error in hidden response data
         if (responseData) {
           responseData.textContent = `Error: ${error.message || "Unknown error"}`;
         }
-        
+
         // Show error in analysis card
         showAnalysisError(error.message || "Failed to connect to server");
 
