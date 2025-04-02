@@ -1,0 +1,102 @@
+---
+---
+
+<script>
+  import { supabase } from '../../lib/supabase.js';
+  
+  // Handle the OAuth callback or email confirmation
+  const handleAuthCallback = async () => {
+    const hashParams = new URLSearchParams(window.location.hash.substring(1));
+    const queryParams = new URLSearchParams(window.location.search);
+    
+    // Debug information
+    console.log('Callback URL:', window.location.href);
+    console.log('Query params:', Object.fromEntries(queryParams.entries()));
+    console.log('Hash params:', Object.fromEntries(hashParams.entries()));
+    
+    // Show status message to user
+    const statusElement = document.getElementById('status-message');
+    const setStatus = (message, isError = false) => {
+      if (statusElement) {
+        statusElement.textContent = message;
+        statusElement.className = isError 
+          ? 'mt-4 text-red-600' 
+          : 'mt-4 text-gray-600';
+      }
+    };
+    
+    try {
+      // Check for access_token in hash (OAuth) or code in query (email confirmation)
+      if (hashParams.get('access_token') || queryParams.get('code')) {
+        setStatus('Processing authentication...');
+        
+        // Exchange the code for a session if needed
+        const code = queryParams.get('code') || hashParams.get('access_token') || '';
+        console.log('Using code/token:', code.substring(0, 10) + '...');
+        
+        const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+        
+        if (error) {
+          console.error('Error exchanging code for session:', error);
+          setStatus(`Authentication error: ${error.message}`, true);
+          return;
+        }
+        
+        console.log('Authentication successful');
+        setStatus('Authentication successful! Redirecting...');
+        
+        // Redirect to home page after successful login
+        setTimeout(() => {
+          window.location.href = '/';
+        }, 1500);
+      } else {
+        console.error('No code or token found in URL');
+        setStatus('No authentication code found. Please try logging in again.', true);
+      }
+    } catch (err) {
+      console.error('Unexpected error during authentication:', err);
+      setStatus('An unexpected error occurred during authentication.', true);
+    }
+  };
+  
+  // Run the callback handler when the page loads
+  document.addEventListener('DOMContentLoaded', handleAuthCallback);
+</script>
+
+<div class="flex justify-center items-center h-screen">
+  <div class="text-center">
+    <div class="flex items-center justify-center space-x-2">
+      <div class="w-4 h-4 bg-indigo-600 rounded-full animate-pulse"></div>
+      <div class="w-4 h-4 bg-indigo-600 rounded-full animate-pulse delay-75"></div>
+      <div class="w-4 h-4 bg-indigo-600 rounded-full animate-pulse delay-150"></div>
+    </div>
+    <p id="status-message" class="mt-4 text-gray-600">Completing authentication...</p>
+    <div class="mt-8">
+      <button 
+        id="debug-button" 
+        class="text-xs text-gray-500 underline"
+        onclick="document.getElementById('debug-info').classList.toggle('hidden')"
+      >
+        Show debug info
+      </button>
+      <pre id="debug-info" class="hidden mt-4 text-left bg-gray-100 p-4 rounded-md overflow-x-auto text-xs max-w-lg mx-auto"></pre>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Add debug info to the pre element
+  document.addEventListener('DOMContentLoaded', () => {
+    const debugInfo = document.getElementById('debug-info');
+    if (debugInfo) {
+      const info = {
+        url: window.location.href,
+        search: window.location.search,
+        hash: window.location.hash,
+        origin: window.location.origin,
+        userAgent: navigator.userAgent
+      };
+      debugInfo.textContent = JSON.stringify(info, null, 2);
+    }
+  });
+</script>

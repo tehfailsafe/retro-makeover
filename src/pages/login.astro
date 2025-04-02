@@ -1,0 +1,162 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout>
+  <main class="container max-w-md mx-auto p-4">
+    <h2 class="text-3xl font-bold tracking-tight mb-6 text-center">
+      Magic Link Login
+    </h2>
+
+    <!-- Login Card -->
+    <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+      <!-- Magic Link Form -->
+      <div id="magic-link-form" class="w-full">
+        <div class="mb-6 text-center">
+          <div class="w-16 h-16 bg-indigo-100 rounded-full mx-auto flex items-center justify-center">
+            <svg class="w-8 h-8 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path>
+            </svg>
+          </div>
+          <h3 class="mt-4 text-lg font-medium">Passwordless Login</h3>
+          <p class="mt-2 text-sm text-gray-500">Enter your email to receive a magic link</p>
+        </div>
+
+        <form id="login-form" class="w-full">
+          <div class="mb-4">
+            <label for="email" class="block text-sm font-medium mb-2">Email</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              required
+            />
+          </div>
+
+          <div class="mb-4">
+            <button
+              type="submit"
+              id="submit-button"
+              class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+            >
+              Send Magic Link
+            </button>
+          </div>
+        </form>
+
+        <div id="auth-message" class="mt-4 text-center hidden">
+          <p id="message-text" class="text-sm"></p>
+        </div>
+      </div>
+
+      <!-- Success State (Hidden by default) -->
+      <div id="success-state" class="w-full py-6 text-center hidden">
+        <div class="w-16 h-16 bg-green-100 rounded-full mx-auto flex items-center justify-center">
+          <svg class="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+          </svg>
+        </div>
+        <h3 class="mt-4 text-lg font-medium">Check your email</h3>
+        <p class="mt-2 text-sm text-gray-500">We've sent a magic link to your email address</p>
+        <p class="mt-4 text-xs text-gray-400">Don't see it? Check your spam folder</p>
+      </div>
+    </div>
+  </main>
+</Layout>
+
+<script>
+  import { supabase } from '../lib/supabase.js';
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const loginForm = document.getElementById('login-form');
+    const submitButton = document.getElementById('submit-button') as HTMLButtonElement;
+    const magicLinkForm = document.getElementById('magic-link-form');
+    const successState = document.getElementById('success-state');
+    const authMessage = document.getElementById('auth-message');
+    const messageText = document.getElementById('message-text');
+
+    // Display message function
+    const showMessage = (message: string, isError = false) => {
+      if (messageText && authMessage) {
+        messageText.textContent = message;
+        messageText.className = isError ? 'text-sm text-red-600' : 'text-sm text-green-600';
+        authMessage.classList.remove('hidden');
+        
+        // Hide message after 5 seconds
+        setTimeout(() => {
+          authMessage.classList.add('hidden');
+        }, 5000);
+      }
+    };
+
+    // Show success state
+    const showSuccessState = () => {
+      if (magicLinkForm && successState) {
+        magicLinkForm.classList.add('hidden');
+        successState.classList.remove('hidden');
+      }
+    };
+
+    // Handle magic link form submission
+    loginForm?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      if (submitButton) {
+        submitButton.disabled = true;
+        submitButton.textContent = 'Sending...';
+      }
+      
+      const formData = new FormData(e.target as HTMLFormElement);
+      const email = formData.get('email') as string;
+      
+      try {
+        // Log the request for debugging
+        console.log('Sending OTP request with:', { 
+          email, 
+          redirectTo: `${window.location.origin}/auth/callback` 
+        });
+        
+        const { data, error } = await supabase.auth.signInWithOtp({
+          email,
+          options: {
+            // Allow existing users to sign in
+            shouldCreateUser: false,
+            emailRedirectTo: `${window.location.origin}/auth/callback`
+          }
+        });
+        
+        if (error) {
+          showMessage(error.message, true);
+          if (submitButton) {
+            submitButton.disabled = false;
+            submitButton.textContent = 'Send Magic Link';
+          }
+        } else {
+          // Show success state
+          showSuccessState();
+        }
+      } catch (err) {
+        console.error('Magic link error:', err);
+        showMessage('An unexpected error occurred', true);
+        if (submitButton) {
+          submitButton.disabled = false;
+          submitButton.textContent = 'Send Magic Link';
+        }
+      }
+    });
+
+    // Check if user is already logged in
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (session) {
+        // User is already logged in, redirect to home page
+        window.location.href = '/';
+      }
+    };
+
+    // Check session on page load
+    checkSession();
+  });
+</script>

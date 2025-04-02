@@ -1,0 +1,57 @@
+---
+---
+
+<nav class="bg-indigo-600 text-white shadow-md">
+  <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+    <a href="/" class="text-xl font-bold">Retro Makeover</a>
+    
+    <div id="nav-links" class="flex space-x-4">
+      <a href="/" class="hover:text-indigo-200">Home</a>
+      <!-- Auth links will be populated by JavaScript -->
+      <div id="auth-links"></div>
+    </div>
+  </div>
+</nav>
+
+<script>
+  import { supabase } from '../lib/supabase.js';
+  
+  document.addEventListener('DOMContentLoaded', async () => {
+    const authLinks = document.getElementById('auth-links');
+    
+    // Function to update navigation based on auth state
+    const updateNavigation = async () => {
+      if (!authLinks) return;
+      
+      // Get current session
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (session) {
+        // User is logged in
+        authLinks.innerHTML = `
+          <a href="/profile" class="hover:text-indigo-200">Profile</a>
+          <button id="logout-button" class="hover:text-indigo-200">Logout</button>
+        `;
+        
+        // Add logout functionality
+        document.getElementById('logout-button')?.addEventListener('click', async () => {
+          await supabase.auth.signOut();
+          window.location.href = '/';
+        });
+      } else {
+        // User is not logged in
+        authLinks.innerHTML = `
+          <a href="/login" class="hover:text-indigo-200">Login</a>
+        `;
+      }
+    };
+    
+    // Update navigation on page load
+    updateNavigation();
+    
+    // Listen for auth state changes
+    supabase.auth.onAuthStateChange((event, session) => {
+      updateNavigation();
+    });
+  });
+</script>

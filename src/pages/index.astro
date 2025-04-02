@@ -389,8 +389,16 @@ import Layout from "../layouts/Layout.astro";
         submitButton.textContent = "Uploading...";
         submitButton.disabled = true;
 
+        // Determine API endpoint based on environment
+        const isDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        const apiUrl = isDev 
+          ? 'http://localhost:3000/upload'
+          : 'https://retro-backend.up.railway.app/upload';
+        
+        console.log(`Using API endpoint: ${apiUrl}`);
+        
         // Send the request to the API
-        const res = await fetch("https://retro-backend.up.railway.app/upload", {
+        const res = await fetch(apiUrl, {
           method: "POST",
           body: formData,
         });
